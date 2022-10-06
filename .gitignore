@@ -383,3 +383,5 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+iml,intellij,intellij+all,react,node
+/.idea/
+/.idea/codeStyles/

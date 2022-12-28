@@ -10,9 +10,17 @@ describe( 'AuthService', () => {
   let fakeUsersService: Partial<UsersService>;
   
   beforeEach( async () => {
+    const users: User[] = [];
     fakeUsersService = {
-      find: () => Promise.resolve( [] ),
-      create: ( email: string, password: string ) => Promise.resolve( { id: 1, email, password } as User ),
+      find: ( email: string ) => {
+        const filteredUsers = users.filter( user => user.email === email );
+        return Promise.resolve( filteredUsers );
+      },
+      create: ( email: string, password: string ) => {
+        const user = { id: Math.floor( Math.random() * 99999 ), email, password } as User;
+        users.push( user );
+        return Promise.resolve( user );
+      },
     };
     
     const module = await Test.createTestingModule( {
@@ -42,8 +50,8 @@ describe( 'AuthService', () => {
   } );
   
   it( 'throws an error if user signs up with email that is in use', async () => {
-    fakeUsersService.find = () => Promise.resolve( [ { id: 1, email: 'test@test.com', password: 'pass' } as User ] );
-    await expect( service.signup( 'test@test.com', 'passtest' ) ).rejects.toThrow( BadRequestException );
+    await service.signup( 'asdf@asdf.com', 'password' );
+    await expect( service.signup( 'asdf@asdf.com', 'password' ) ).rejects.toThrow( BadRequestException );
   } );
   
   it( 'throws if signin is called with an unused email', async () => {
@@ -51,11 +59,13 @@ describe( 'AuthService', () => {
   } );
   
   it( 'throws if an invalid password is provided', async () => {
-    fakeUsersService.find = () => {
-      return Promise.resolve( [
-        { email: 'asdf@asdf.com', password: 'pass' } as User,
-      ] );
-    }
-    await expect( service.signin('asdf@asdf.com', 'password'), ).rejects.toThrow(BadRequestException);
-  } )
+    await service.signup( 'asdf@asdf.com', 'pass' );
+    await expect( service.signin( 'asdf@asdf.com', 'password' ) ).rejects.toThrow( BadRequestException );
+  } );
+  
+  it( 'returns a user if correct password is provided', async () => {
+    await service.signup( 'asdf@asdf.com', 'password' );
+    const user = await service.signin( 'asdf@asdf.com', 'password' );
+    expect( user ).toBeDefined();
+  } );
 } );

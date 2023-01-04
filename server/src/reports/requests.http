@@ -1,0 +1,12 @@
+POST http://localhost:3000/reports
+content-type: application/json
+
+{
+  "make": "subaru",
+  "model": "forester",
+  "year": 2011,
+  "mileage": 150000,
+  "lng": 0,
+  "lat": 0,
+  "price": 30000
+}

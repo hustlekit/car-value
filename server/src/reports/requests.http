@@ -1,3 +1,4 @@
+### Create report
 POST http://localhost:3000/reports
 content-type: application/json
 
@@ -18,3 +19,6 @@ content-type: application/json
 {
   "approved": true
 }
+
+### Get an estimate for an existing vehicle
+GET http://localhost:3000/reports?make=subaru&model=forester&lng=0&lat=0&mileage=150000&year=2011
